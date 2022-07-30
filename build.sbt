@@ -8,6 +8,7 @@ lazy val commonLibraries = Seq(
 )
 
 lazy val `lambda-port-adapter-sample` = (project in file("lambda-port-adapter-sample"))
+  .dependsOn(`arch`)
   .settings(
     name := "lambda-port-adapter-sample",
     libraryDependencies ++= commonLibraries
@@ -15,7 +16,16 @@ lazy val `lambda-port-adapter-sample` = (project in file("lambda-port-adapter-sa
 
 lazy val `play-port-adapter-sample` = (project in file("play-port-adapter-sample"))
   .enablePlugins(PlayScala)
+  .dependsOn(`arch`)
   .settings(
     name := "play-port-adapter-sample",
     libraryDependencies ++= commonLibraries
+  )
+
+lazy val `arch` = (project in file("arch"))
+  .settings(
+    name := "arch",
+    libraryDependencies ++= Seq(
+      "org.scalatest" %% "scalatest" % "3.2.12" % Test
+    )
   )
