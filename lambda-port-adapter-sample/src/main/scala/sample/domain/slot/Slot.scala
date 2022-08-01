@@ -5,10 +5,11 @@ import sample.domain.util.Location
 
 import java.time.LocalDate
 
-class Slot(
+class Slot private (
     val id: Id[Slot],
     val reservationDate: LocalDate,
-    val location: Location
+    val location: Location,
+    val isVacant: Boolean
 ) extends Entity[Slot] {
 
   def canEqual(other: Any): Boolean = other.isInstanceOf[Slot]
@@ -20,3 +21,5 @@ class Slot(
 
   override def hashCode(): Int = 31 * id.##
 }
+
+object Slot {}

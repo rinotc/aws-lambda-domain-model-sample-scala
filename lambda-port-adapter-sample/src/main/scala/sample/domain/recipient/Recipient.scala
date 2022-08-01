@@ -1,6 +1,7 @@
 package sample.domain.recipient
 
 import arch.ddd.{Entity, Id}
+import sample.domain.slot.Slot
 import sample.domain.util.{Age, EmailAddress}
 
 final class Recipient(
