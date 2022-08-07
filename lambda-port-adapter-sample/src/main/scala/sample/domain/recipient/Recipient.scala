@@ -3,6 +3,9 @@ package sample.domain.recipient
 import arch.ddd.{Entity, Id}
 import sample.domain.slot.Slot
 import sample.domain.util.{Age, EmailAddress}
+import software.amazon.awssdk.services.dynamodb.model.AttributeValue
+
+import scala.jdk.CollectionConverters.{MapHasAsJava, SeqHasAsJava}
 
 /**
  * 受信者情報
@@ -23,6 +26,8 @@ final class Recipient(
     val slots: Seq[Slot]
 ) extends Entity[Recipient] {
 
+  import Recipient._
+
   def areSlotsSameDate(slot: Slot): Boolean =
     slots.exists(_.reservationDate == slot.reservationDate)
 
@@ -33,6 +38,22 @@ final class Recipient(
       _ <- Either.cond(areSlotsSameDate(slot), (), "Slot with the same date already exists.")
       _ <- Either.cond(isSlotCountsOverThanEqualTwo, (), "slot count over 2")
     } yield copy(slots = this.slots.appended(slot))
+  }
+
+  def forDynamoDbMap: Map[String, AttributeValue] = {
+    Map(
+      "pk"         -> AttributeValue.builder().s(primaryKeyPrefix + id.value).build(),
+      "email"      -> AttributeValue.builder().s(email.value).build(),
+      "first_name" -> AttributeValue.builder().s(firstName).build(),
+      "last_name"  -> AttributeValue.builder().s(lastName).build(),
+      "age"        -> AttributeValue.builder().n(age.value.toString).build(),
+      "slots" -> AttributeValue
+        .builder().l(
+          slots.map { slot =>
+            AttributeValue.builder().m(slot.forDynamoDbMap.asJava).build()
+          }.asJava
+        ).build()
+    )
   }
 
   override def equals(other: Any): Boolean = other match {
@@ -53,4 +74,9 @@ final class Recipient(
       age: Age = this.age,
       slots: Seq[Slot] = this.slots
   ) = new Recipient(id, email, firstName, lastName, age, slots)
+}
+
+object Recipient {
+  final val primaryKeyPrefix = "recipient#"
+
 }

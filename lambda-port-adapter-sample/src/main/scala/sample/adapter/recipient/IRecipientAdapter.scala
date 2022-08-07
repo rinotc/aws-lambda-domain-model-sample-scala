@@ -7,5 +7,5 @@ trait IRecipientAdapter {
 
   def load(recipientId: Id[Recipient]): Option[Recipient]
 
-  def save(recipient: Recipient): Either[String, Unit]
+  def save(recipient: Recipient): Unit
 }
